@@ -15,16 +15,17 @@ for i in range(alunos):
     n2 = float(input("Valor da segunda nota:\n"))
 
     media = calcular_media(n1,n2)
-    print(f"A média do aluno é {media}")
+    print(f"A média de {nome_aluno} é {media}\n")
     if media >= 7:
-        situacao = "APROVADO"
+        print("APROVADO\n")
         aprovados += 1
-    elif media >= 4 and media <= 6:
-        situacao = "RECUPERAÇÃO"
+
+    elif media >= 4 and media < 7:
+        print("RECUPERAÇÃO\n")
         em_recuperacao += 1
     else:
-        situacao = "REPROVADO!"
+        print("REPROVADO\n")
         reprovados += 1
-
-print(f"Aluno: {nome_aluno}")
-print(f"Média ")
+print(f"Total de alunos APROVADOS: {aprovados}")
+print(f"Total de alunos em RECUPERAÇÃO: {em_recuperacao}")
+print(f"Total de alunos REPROVADOS: {reprovados}")

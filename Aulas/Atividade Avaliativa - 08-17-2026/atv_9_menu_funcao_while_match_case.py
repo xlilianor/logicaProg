@@ -16,9 +16,7 @@ def mostrar_tabuada(numero):
         resultado = numero * i
         print(f"{numero} * {i} = {resultado}")
 
-
-def menu_interativo():
-    while True:
+while True:
         print("\n MENU \n")
         print("1 - Verificar se um número é par ou ímpar")
         print("2 - Calcular o quadrado de um número")
@@ -42,4 +40,3 @@ def menu_interativo():
                 break
             case _:
                 print("Opção inválida! Escolha uma das opçẽso do menu")
-menu_interativo()
