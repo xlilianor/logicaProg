@@ -1,0 +1,987 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Manipulação de Arquivos em Python</title><meta name="data-notion-page-icon" content="🐍"/><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%90%8D%3C%2Ftext%3E%3C%2Fsvg%3E"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+/*
+ * Toggles and callouts hold arbitrary content, so they can easily be taller
+ * than a page. They must stay breakable: avoiding breaks inside them makes
+ * Chromium push the whole block onto the next page, which leaves the previous
+ * page mostly empty before every long toggle.
+ */
+details,
+aside {
+	margin: 1.25em 0;
+}
+
+/* Keep a toggle's title on the same page as the start of its content. */
+summary {
+	page-break-after: avoid;
+	break-after: avoid;
+}
+
+/*
+ * Toggle headings render as <h1/h2/h3 style="display:inline-block"> inside
+ * <summary>. Without this reset, the heading's margin-top pushes it below the
+ * ::marker (▼), so the triangle and the title appear on separate lines.
+ */
+summary h1,
+summary h2,
+summary h3,
+summary h4 {
+	margin-top: 0;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="3c70459d-cfff-8148-a4fb-fc2f4e971e62" class="page sans" data-notion-page-icon="🐍"><header><div class="page-header-icon undefined"><span class="icon" data-emoji="🐍"></span></div><h1 class="page-title" dir="auto">Manipulação de Arquivos em Python</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><aside class="block-color-teal_background callout" data-notion-callout="" data-notion-callout-icon="🎯" data-notion-callout-background="teal_background" style="white-space:pre-wrap;display:flex" id="d9a0cc8f-ed8d-4335-bf75-107a96c948a1" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🎯"></span></div><div style="width:100%"><p id="b6dc8d70-c968-4425-a2ad-22e3f417705a" class="" dir="auto"><strong>Disciplina:</strong> Lógica de Programação  </p><p id="f89ad6a5-9b85-44ad-873a-c8d9a83d5bfd" class="" dir="auto"><strong>Assunto:</strong> Manipulação de arquivos em Python  </p></div></aside><hr id="f696aa63-7321-45b8-a939-458ad0699552" dir="auto"/><h1 id="c99c8770-ceb7-47a2-ba23-e8994ef14a3a" class="block-color-teal" data-notion-highlight="teal" dir="auto">1. Por que utilizar arquivos?</h1><p id="3b7bfbf6-346d-4b00-8af3-a80fea6e0fd4" class="" dir="auto">Até agora, os dados utilizados pelos nossos programas normalmente ficam armazenados em <strong>variáveis</strong>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" integrity="sha512-AKaNmg8COK0zEbjTdMHJAPJ0z6VeNqvRvH4/d5M4sHJbQQUToMBtodq4HaV4fa+WV2UTfoperElm66c9/8cKmQ==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="81f7519e-d2f8-40be-9b90-d0467843853b" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">nome = input(&quot;Digite seu nome: &quot;)
+print(nome)</code></pre><p id="fc1428da-d0b2-4927-81af-e1c30fb980ec" class="" dir="auto">Enquanto o programa está executando, o valor de <code>nome</code> está disponível. Porém, quando o programa termina, esse valor é perdido.</p><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="💾" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="45a4ac60-e88b-4269-b7e4-49d96fdbde6c" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="💾"></span></div><div style="width:100%"><p id="b2a9e80c-7772-434d-97ab-562305154711" class="" dir="auto"><strong>Arquivos permitem armazenar informações de forma permanente.</strong></p><p id="05e9c8a7-33cf-441f-98fb-86704432a830" class="" dir="auto">Eles podem guardar nomes de alunos, notas, produtos, configurações, resultados de pesquisas, registros de acesso e relatórios.</p></div></aside><hr id="d07cfe28-5b7f-4dc0-8d58-32e4129455b0" dir="auto"/><h1 id="97c6cd93-8746-40ad-a00f-8227e6469d94" class="block-color-teal" data-notion-highlight="teal" dir="auto">2. Preparando a pasta da atividade</h1><ul id="6ff652a2-add1-4531-b5bf-f104c1a5b882" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Crie uma pasta chamada <code>aula_arquivos</code>.</span><div class="indented"></div></li></ul><ul id="79eb34dc-2371-499c-ac2f-3648e071c1f8" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Dentro dela, crie um arquivo Python chamado <code>arquivos.py</code>.</span><div class="indented"></div></li></ul><ul id="d47d9a57-9598-4f25-98d8-989ce90b90c5" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Mantenha inicialmente todos os arquivos utilizados na mesma pasta do programa.</span><div class="indented"></div></li></ul><hr id="fcfccab5-b676-4589-8f4d-2114c0080e5a" dir="auto"/><h1 id="8104e712-a49a-4091-8ed3-0d2e3df6b614" class="block-color-teal" data-notion-highlight="teal" dir="auto">3. Criando nosso primeiro arquivo</h1><p id="f086f082-1eff-4e04-82b6-e593757d3d99" class="" dir="auto">Digite e execute:</p><pre id="b858fd2c-8202-4d16-8216-eaad84cd0a6f" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">arquivo = open(&quot;mensagem.txt&quot;, &quot;w&quot;)
+
+arquivo.write(&quot;Olá, mundo!&quot;)
+
+arquivo.close()</code></pre><p id="b8bee4e6-8bb6-46be-8f06-ebce1cade97c" class="" dir="auto">Depois da execução, abra a pasta do projeto e localize <code>mensagem.txt</code>.</p><aside class="block-color-yellow_background callout" data-notion-callout="" data-notion-callout-icon="👀" data-notion-callout-background="yellow_background" style="white-space:pre-wrap;display:flex" id="91878c41-b25f-4db3-aaee-97ea72e3883f" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="👀"></span></div><div style="width:100%"><p id="1ed47531-d780-4ec6-b5ce-6599f0eb75fa" class="" dir="auto"><strong>Observe:</strong> o arquivo não existia antes da execução. O Python criou o arquivo para nós.</p></div></aside><h3 id="df3a609a-cf5b-4bf0-86b5-e2e457d9daa4" class="" dir="auto">Pergunta</h3><blockquote id="94f84c36-fe0a-4c89-8db5-8d960f1e9be2" class="" dir="auto">O que foi armazenado dentro de <code>mensagem.txt</code>?</blockquote><hr id="8c191612-781b-4ca1-b8fd-ff33f433859e" dir="auto"/><h1 id="47d6105e-bae5-4e5b-960e-e09b16566c8c" class="block-color-teal" data-notion-highlight="teal" dir="auto">4. Entendendo <code>open()</code></h1><p id="c8d137d5-5c25-4c2d-b714-ed08b446b726" class="" dir="auto">A função <code>open()</code> permite abrir ou criar arquivos.</p><pre id="d6447698-fc40-4461-bf30-6fead719a206" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">open(&quot;mensagem.txt&quot;, &quot;w&quot;)</code></pre><table id="e0072da4-651b-4e3a-880f-7a504c3fdbc1" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="caae47fc-98d7-4553-8810-f909d787c5bb" dir="ltr"><th id="lBmp" class="block-color-teal_background simple-table-header">Parte</th><th id="F?&gt;[" class="block-color-teal_background simple-table-header">Significado</th></tr></thead><tbody><tr id="f4da82b0-e2b4-4d90-a1c6-ac491e0ea797" dir="ltr"><td id="lBmp" class=""><code>&quot;mensagem.txt&quot;</code></td><td id="F?&gt;[" class="">nome do arquivo</td></tr><tr id="cbd337a4-bc01-4376-b108-0715678d032a" dir="ltr"><td id="lBmp" class=""><code>&quot;w&quot;</code></td><td id="F?&gt;[" class="">modo de abertura</td></tr></tbody></table><h3 id="a987f537-b337-436e-9223-4b9f1c2cbd8a" class="" dir="auto">Principais modos</h3><table id="da4d1a07-cded-4547-b830-eda2066f5702" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="b21e3196-1b44-412e-9990-d55ddaa45d28" dir="ltr"><th id="HL&lt;[" class="block-color-teal_background simple-table-header">Modo</th><th id="h_jk" class="block-color-teal_background simple-table-header">Nome</th><th id="?ujq" class="block-color-teal_background simple-table-header">Comportamento</th></tr></thead><tbody><tr id="6ff227a5-21f9-4cd4-bd8b-dd2e4e322297" dir="ltr"><td id="HL&lt;[" class=""><code>&quot;r&quot;</code></td><td id="h_jk" class="">read</td><td id="?ujq" class="">Lê um arquivo existente</td></tr><tr id="062aa32b-bb94-4cca-bf3d-bf1ecd8514e1" dir="ltr"><td id="HL&lt;[" class=""><code>&quot;w&quot;</code></td><td id="h_jk" class="">write</td><td id="?ujq" class="">Escreve e substitui o conteúdo anterior</td></tr><tr id="538a0918-cb61-4501-8c2d-a2bbd2195d96" dir="ltr"><td id="HL&lt;[" class=""><code>&quot;a&quot;</code></td><td id="h_jk" class="">append</td><td id="?ujq" class="">Acrescenta conteúdo ao final</td></tr><tr id="e92cc54b-9d8a-4d98-be43-1eee9d92304b" dir="ltr"><td id="HL&lt;[" class=""><code>&quot;x&quot;</code></td><td id="h_jk" class="">create</td><td id="?ujq" class="">Cria um arquivo novo; gera erro se ele já existir</td></tr></tbody></table><hr id="e63cf97b-ff32-4154-a919-29ba25cf8968" dir="auto"/><h1 id="c828841b-3132-45aa-8386-9abbccb8a3f8" class="block-color-red" data-notion-highlight="red" dir="auto">5. Cuidado com o modo <code>&quot;w&quot;</code></h1><p id="f616bfca-8ca7-42f2-bf5d-de3f28a9b7cf" class="" dir="auto">Modifique o programa:</p><pre id="be2f0030-5ed7-45a7-859b-2612ef67591a" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">arquivo = open(&quot;mensagem.txt&quot;, &quot;w&quot;)
+
+arquivo.write(&quot;Segunda mensagem&quot;)
+
+arquivo.close()</code></pre><p id="2f83134e-8d20-4b6f-8509-089e63fa18b7" class="" dir="auto">Execute novamente e abra <code>mensagem.txt</code>.</p><h3 id="81bb0dd6-3bc1-4e7c-837f-99efd55e0522" class="" dir="auto">Pergunta</h3><blockquote id="d33e2a76-9047-4ed4-8e0f-3da9dbc2dfa6" class="" dir="auto">O que aconteceu com a mensagem anterior?</blockquote><aside class="block-color-red_background callout" data-notion-callout="" data-notion-callout-icon="⚠️" data-notion-callout-background="red_background" style="white-space:pre-wrap;display:flex" id="e9f8891f-5372-4ba0-ab20-be17f090b176" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="⚠️"></span></div><div style="width:100%"><p id="64a477c4-2b48-4ec0-a59b-7d7a0f37adcf" class="" dir="auto"><strong>Atenção:</strong> o modo <code>&quot;w&quot;</code> apaga o conteúdo anterior do arquivo antes de escrever o novo conteúdo.</p></div></aside><hr id="7ab40239-9db8-4d53-bfd8-ce5e75c4bdb0" dir="auto"/><h1 id="136038ef-b3b3-425a-b613-14dd5772588a" class="block-color-teal" data-notion-highlight="teal" dir="auto">6. Acrescentando conteúdo com <code>&quot;a&quot;</code></h1><p id="3037dc5c-2298-4194-867f-f58cae66f3d5" class="" dir="auto">Agora utilize:</p><pre id="7dc02ca7-75f1-437c-81fc-7cdd2ce692d8" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">arquivo = open(&quot;mensagem.txt&quot;, &quot;a&quot;)
+
+arquivo.write(&quot;Nova mensagem&quot;)
+
+arquivo.close()</code></pre><p id="0963e94c-d2b7-45b4-84ba-d6907963c539" class="" dir="auto">Execute várias vezes.</p><h3 id="b694d1e8-7343-47e8-a1b7-ebec80dd802f" class="" dir="auto">Pergunta</h3><blockquote id="9bac8064-a237-4c8d-b7ab-1302156add58" class="" dir="auto">O conteúdo anterior foi apagado?</blockquote><aside class="block-color-teal_background callout" data-notion-callout="" data-notion-callout-icon="➕" data-notion-callout-background="teal_background" style="white-space:pre-wrap;display:flex" id="8d434007-0734-4e99-8a2b-ae333c7ce5ec" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="➕"></span></div><div style="width:100%"><p id="05e40f57-b5ce-44c2-b624-ea22e4727055" class="" dir="auto">O modo <code>&quot;a&quot;</code> acrescenta informações ao <strong>final do arquivo</strong>.</p></div></aside><hr id="54bda5e6-b367-4ff1-9bf1-f7aa4e6d751a" dir="auto"/><h1 id="7a7e48c1-f871-4b56-bed1-cdc60d58e03b" class="block-color-teal" data-notion-highlight="teal" dir="auto">7. Quebra de linha com <code>\n</code></h1><p id="6bf6c8ad-a29c-4325-9883-af8d9d92cfba" class="" dir="auto">Sem uma quebra de linha, as mensagens podem ficar uma ao lado da outra.</p><pre id="a358bd50-41cb-4c66-9e53-e1349587f511" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">arquivo = open(&quot;mensagem.txt&quot;, &quot;a&quot;)
+
+arquivo.write(&quot;Nova mensagem\n&quot;)
+
+arquivo.close()</code></pre><p id="f9671bdd-dd29-4d33-bf62-a2d63d1b2fa1" class="" dir="auto">O símbolo <code>\n</code> representa uma <strong>quebra de linha</strong>.</p><p id="636119e8-a8c9-42ea-a303-dc470f80c5d9" class="" dir="auto">Teste:</p><pre id="d15e8fcc-244d-429f-b855-486362e60275" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">arquivo = open(&quot;mensagem.txt&quot;, &quot;w&quot;)
+
+arquivo.write(&quot;João\n&quot;)
+arquivo.write(&quot;Maria\n&quot;)
+arquivo.write(&quot;Carlos\n&quot;)
+
+arquivo.close()</code></pre><p id="ba05ca8e-1b4c-497b-84a2-7849fe4642c9" class="" dir="auto">Resultado esperado em <code>mensagem.txt</code>:</p><pre id="d7da4748-f718-41ff-a4a0-19a52320c80d" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">João
+Maria
+Carlos</code></pre><hr id="1fcd59c0-8723-4790-9ed2-96f401cddb69" dir="auto"/><h1 id="1ef4bc36-2383-498d-872e-0325f31f5a80" class="block-color-teal" data-notion-highlight="teal" dir="auto">8. A forma recomendada: <code>with</code></h1><p id="844e62b8-d6cd-4ef1-95c7-dc5a1747c178" class="" dir="auto">Em Python, podemos utilizar:</p><pre id="774abde3-fdea-4b4f-9c04-f9d3e85cedac" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;mensagem.txt&quot;, &quot;w&quot;) as arquivo:
+    arquivo.write(&quot;Olá!&quot;)</code></pre><p id="e77e926c-d901-49df-b80a-4a96e0688400" class="" dir="auto">Neste caso, não precisamos executar <code>arquivo.close()</code>.</p><aside class="block-color-teal_background callout" data-notion-callout="" data-notion-callout-icon="✅" data-notion-callout-background="teal_background" style="white-space:pre-wrap;display:flex" id="0ca79c54-b6f6-464f-80b7-e35bb1148c63" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="✅"></span></div><div style="width:100%"><p id="2a7e5d6f-ac6a-4f2d-a1c8-4eb365b4bfdc" class="" dir="auto"><strong>A partir de agora, utilizaremos </strong><code><strong>with</strong></code><strong>.</strong>  </p><p id="55de6017-1b76-4df3-b0b0-c94a74bd3aa4" class="" dir="auto">O Python fecha o arquivo automaticamente quando o bloco termina.</p></div></aside><hr id="d6a3c3a1-1ea0-4dd6-9555-a186d64819b6" dir="auto"/><h1 id="c0ecdf0c-5dcf-43fa-a6b9-d204a423ded3" class="block-color-teal" data-notion-highlight="teal" dir="auto">9. Trabalhando com caracteres especiais</h1><p id="2d1dad63-b590-4ddf-b86b-b073e5588eda" class="" dir="auto">Para evitar problemas com caracteres como <code>á</code>, <code>é</code>, <code>ç</code>, <code>ã</code> e <code>õ</code>, utilize <code>encoding=&quot;utf-8&quot;</code>.</p><pre id="f7047223-63eb-409e-b705-df5c71e26ec6" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;mensagem.txt&quot;, &quot;w&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    arquivo.write(&quot;Programação em Python\n&quot;)
+    arquivo.write(&quot;João está estudando arquivos.&quot;)</code></pre><hr id="bfe83a77-8085-42f7-ac2a-3d7d45e03700" dir="auto"/><h1 id="60909cc1-6d24-4132-81ab-ef231e1edaeb" class="block-color-blue" data-notion-highlight="blue" dir="auto">10. Lendo um arquivo com <code>read()</code></h1><p id="81e6b20f-4cb5-4c3d-82d8-84fd5f989d0c" class="" dir="auto">Crie manualmente um arquivo chamado <code>alunos.txt</code> com este conteúdo:</p><pre id="b0d1a44a-5388-472b-ba6e-24252dda8d6e" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Ana
+Carlos
+João
+Mariana
+Pedro</code></pre><p id="7b8a4f62-95c7-4a09-b206-c2db78a2a1e9" class="" dir="auto">Agora utilize:</p><pre id="0662c20d-15cb-48fa-8b99-64071aa211ba" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    conteudo = arquivo.read()
+
+print(conteudo)</code></pre><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="📖" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="29d8802f-cf1c-42fa-914e-a67de3df8a7d" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="📖"></span></div><div style="width:100%"><p id="2cfbd41b-c7ab-44ef-b7bd-9466238ef06f" class="" dir="auto"><code>read()</code> lê <strong>todo o conteúdo do arquivo</strong> de uma vez.</p></div></aside><hr id="03151e27-56b4-4a38-9dc5-9da044efa6bf" dir="auto"/><h1 id="a223dc61-e2ae-45d1-af85-9b36f5057809" class="block-color-blue" data-notion-highlight="blue" dir="auto">11. Lendo uma linha com <code>readline()</code></h1><pre id="ec3d72dd-cf3d-4a8a-8f03-2f1e208953b7" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    linha = arquivo.readline()
+
+print(linha)</code></pre><h3 id="bb44d202-5368-4f10-bffa-76f42ea4a1b7" class="" dir="auto">Pergunta</h3><blockquote id="cb8baba5-c30d-4a89-b160-dc34dd1d5e71" class="" dir="auto">Quantas linhas foram apresentadas?</blockquote><p id="c8cc9270-decf-4eba-8a29-c8152f940cf7" class="" dir="auto">Agora experimente:</p><pre id="8369ff1a-d80f-43fc-98a8-8bc1a4ab703e" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    print(arquivo.readline())
+    print(arquivo.readline())
+    print(arquivo.readline())</code></pre><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="1️⃣" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="60ee548b-7675-41b5-bb3f-2a16cc9ac4d0" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="1️⃣"></span></div><div style="width:100%"><p id="e27c3710-fe70-4aee-9483-fca21b6ade8f" class="" dir="auto"><code>readline()</code> lê <strong>uma linha por vez</strong>.</p></div></aside><hr id="be571770-024f-4f5d-bb77-778812c6804e" dir="auto"/><h1 id="c239b0b1-b79c-4a6d-9dc8-a372a2095321" class="block-color-blue" data-notion-highlight="blue" dir="auto">12. Lendo todas as linhas com <code>readlines()</code></h1><pre id="19e8e5ed-cd2b-4b3a-8c98-883f15659b48" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    alunos = arquivo.readlines()
+
+print(alunos)</code></pre><p id="618b0f23-3919-4eca-b2e6-b1d27d635472" class="" dir="auto">Resultado aproximado:</p><pre id="c73f0221-d709-4f27-be95-d34f0b644b89" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">[&#x27;Ana\n&#x27;, &#x27;Carlos\n&#x27;, &#x27;João\n&#x27;, &#x27;Mariana\n&#x27;, &#x27;Pedro\n&#x27;]</code></pre><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="📋" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="3747e951-aecc-4f00-b6ad-a2515c140426" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="📋"></span></div><div style="width:100%"><p id="192a9c1c-b706-4098-a82e-914fe0609f05" class="" dir="auto"><code>readlines()</code> retorna uma <strong>lista contendo as linhas do arquivo</strong>.</p></div></aside><hr id="0d1b2bd0-9669-4d83-b2f6-a11d914d3301" dir="auto"/><h1 id="ccd677d0-eadf-4bf4-9dc9-1460df052c8b" class="block-color-blue" data-notion-highlight="blue" dir="auto">13. Lendo o arquivo utilizando <code>for</code></h1><p id="19a66415-8985-4bf7-a24d-3738cc9905a4" class="" dir="auto">Uma das formas mais úteis de percorrer um arquivo é usar <code>for</code>:</p><pre id="a7ecc650-5768-42ff-ac80-25d3d2715f10" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        print(linha)</code></pre><p id="14a1355c-b842-4142-a13d-b52be4bdc463" class="" dir="auto">Cada repetição do <code>for</code> lê uma linha.</p><hr id="37392611-f359-46f8-9559-b17ffab33919" dir="auto"/><h1 id="db7be9b2-6b59-4f60-9939-e25ccefb180a" class="block-color-blue" data-notion-highlight="blue" dir="auto">14. Removendo <code>\n</code> com <code>strip()</code></h1><pre id="df21c2ee-144f-4390-940d-cd69aa857aa4" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        print(linha.strip())</code></pre><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="🧹" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="22e0d011-7e19-4086-885e-ff5259bca978" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🧹"></span></div><div style="width:100%"><p id="0cefceac-0fe3-44ad-87c1-1fd6820ee0b4" class="" dir="auto"><code>strip()</code> remove espaços e quebras de linha das extremidades da string.</p></div></aside><hr id="0c72daef-2617-48a9-a0e7-6d9dfd586d54" dir="auto"/><h1 id="ec6c3aaf-b987-4efb-bacd-1920fe44f9d0" class="block-color-purple" data-notion-highlight="purple" dir="auto">15. Criando um cadastro simples</h1><pre id="650bbc9e-6e5f-4ca9-bd0b-a0401748d4b7" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">nome = input(&quot;Digite o nome do aluno: &quot;)
+
+with open(&quot;alunos.txt&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    arquivo.write(nome + &quot;\n&quot;)
+
+print(&quot;Aluno cadastrado!&quot;)</code></pre><ul id="ccb97312-1baf-42c2-ab76-e0be814b230f" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Execute o programa várias vezes.</span><div class="indented"></div></li></ul><ul id="7000e6bf-18e4-47e0-bd79-296017f2983a" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Cadastre alunos diferentes.</span><div class="indented"></div></li></ul><ul id="1763ec73-6422-4bed-9ed0-e9f8ab4f65f7" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">Abra <code>alunos.txt</code> e confira se os nomes permaneceram armazenados.</span><div class="indented"></div></li></ul><hr id="5fd94e47-398e-4597-9738-32309bf4ef0c" dir="auto"/><h1 id="ed5af1de-df4d-45ae-93a8-61c187b1689b" class="block-color-purple" data-notion-highlight="purple" dir="auto">16. Cadastrando vários alunos com <code>while</code></h1><pre id="449e75c9-69df-4b10-9977-85741d926707" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">opcao = &quot;s&quot;
+
+while opcao == &quot;s&quot;:
+    nome = input(&quot;Nome do aluno: &quot;)
+
+    with open(&quot;alunos.txt&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+        arquivo.write(nome + &quot;\n&quot;)
+
+    opcao = input(&quot;Cadastrar outro aluno? (s/n): &quot;)</code></pre><h3 id="f647f7a6-2970-49bf-b4c2-cc1fd4c03147" class="" dir="auto">Pergunta</h3><blockquote id="e9ce8c0c-8db3-4110-af43-37856ec6eb2b" class="" dir="auto">Por que utilizamos <code>&quot;a&quot;</code> e não <code>&quot;w&quot;</code>?</blockquote><hr id="ae12e366-850d-4695-8e7b-b3b87aabc800" dir="auto"/><h1 id="f2a3bb75-10d8-4dea-8904-60adf242dfd4" class="block-color-purple" data-notion-highlight="purple" dir="auto">17. Criando um menu</h1><p id="781e7c6e-7403-4bf0-9b6b-bc5b364ca072" class="" dir="auto">Agora vamos reunir <code>while</code>, <code>match/case</code> e arquivos.</p><pre id="73c3cd69-2d46-4882-ac9a-0deb362319f2" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">while True:
+    print(&quot;&quot;&quot;
+    ===== MENU =====
+
+    1 - Cadastrar aluno
+    2 - Listar alunos
+    0 - Sair
+    &quot;&quot;&quot;)
+
+    opcao = int(input(&quot;Escolha: &quot;))
+
+    match opcao:
+        case 1:
+            nome = input(&quot;Nome: &quot;)
+
+            with open(&quot;alunos.txt&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+                arquivo.write(nome + &quot;\n&quot;)
+
+            print(&quot;Aluno cadastrado!&quot;)
+
+        case 2:
+            with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+                for aluno in arquivo:
+                    print(aluno.strip())
+
+        case 0:
+            print(&quot;Programa encerrado.&quot;)
+            break
+
+        case _:
+            print(&quot;Opção inválida.&quot;)</code></pre><hr id="a60f706a-3083-4220-93d1-5e14ae43d1ad" dir="auto"/><h1 id="1f11f4f0-a33f-4aab-b0c4-890c34dd0da5" class="block-color-purple" data-notion-highlight="purple" dir="auto">18. Organizando com funções</h1><pre id="b4ec7184-9932-4c65-981a-a4d4812a374c" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">def cadastrar_aluno():
+    nome = input(&quot;Nome: &quot;)
+
+    with open(&quot;alunos.txt&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+        arquivo.write(nome + &quot;\n&quot;)
+
+    print(&quot;Aluno cadastrado!&quot;)
+
+
+def listar_alunos():
+    with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+        for aluno in arquivo:
+            print(aluno.strip())</code></pre><p id="8094da9f-3046-4586-8ea2-266e495553ba" class="" dir="auto">Programa principal:</p><pre id="a8213298-bd79-46ee-9046-6b5f9f3c0269" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">while True:
+    print(&quot;&quot;&quot;
+    1 - Cadastrar
+    2 - Listar
+    0 - Sair
+    &quot;&quot;&quot;)
+
+    opcao = int(input(&quot;Opção: &quot;))
+
+    match opcao:
+        case 1:
+            cadastrar_aluno()
+        case 2:
+            listar_alunos()
+        case 0:
+            break
+        case _:
+            print(&quot;Opção inválida.&quot;)</code></pre><hr id="81535e76-35e4-4f25-bbca-dd0fc09f380d" dir="auto"/><h1 id="c432695e-0883-42be-a4a4-7fd4a9509a6e" class="block-color-orange" data-notion-highlight="orange" dir="auto">19. Guardando mais de uma informação</h1><p id="7af818ff-4e3d-47ef-bfc8-84ee92c0d900" class="" dir="auto">Agora queremos armazenar <strong>nome e nota</strong>.</p><pre id="8414e66d-03ae-4f16-a56d-abe413303270" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">nome = input(&quot;Nome: &quot;)
+nota = float(input(&quot;Nota: &quot;))
+
+with open(&quot;notas.txt&quot;, &quot;a&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    arquivo.write(f&quot;{nome};{nota}\n&quot;)</code></pre><p id="69af4863-7078-4e46-bc06-719c75ab7d30" class="" dir="auto">O arquivo poderá ficar assim:</p><pre id="dac3d4aa-43df-48a9-9b2b-1736eb56a230" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Ana;8.5
+Carlos;6.0
+João;9.0</code></pre><aside class="block-color-orange_background callout" data-notion-callout="" data-notion-callout-icon="💡" data-notion-callout-background="orange_background" style="white-space:pre-wrap;display:flex" id="039364f9-451f-43e9-86a5-0d62e71f286d" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="💡"></span></div><div style="width:100%"><p id="a7251274-e32d-40e1-9633-4c18ca79f959" class="" dir="auto">O caractere <code>;</code> está sendo usado como <strong>separador</strong> entre os dados de uma mesma linha.</p></div></aside><hr id="61eba219-cd9b-4ce6-83c4-89e89e29791d" dir="auto"/><h1 id="a2642f9f-4211-4f45-b0e6-44f7a4bab17c" class="block-color-orange" data-notion-highlight="orange" dir="auto">20. Separando os dados com <code>split()</code></h1><pre id="b149049a-3469-4a8a-9590-7525fd01edc0" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;notas.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        dados = linha.strip().split(&quot;;&quot;)
+        print(dados)</code></pre><p id="f1146d7e-5b5c-48a7-abe3-99954967ed46" class="" dir="auto">Resultado aproximado:</p><pre id="f8166b23-3daa-40d0-94d3-fef5bd537023" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">[&#x27;Ana&#x27;, &#x27;8.5&#x27;]
+[&#x27;Carlos&#x27;, &#x27;6.0&#x27;]
+[&#x27;João&#x27;, &#x27;9.0&#x27;]</code></pre><aside class="block-color-orange_background callout" data-notion-callout="" data-notion-callout-icon="✂️" data-notion-callout-background="orange_background" style="white-space:pre-wrap;display:flex" id="a988264d-e2dd-4ee3-8f63-cd263119a9d5" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="✂️"></span></div><div style="width:100%"><p id="59b09be0-a3b3-4229-8077-27aa52402c02" class="" dir="auto"><code>split(&quot;;&quot;)</code> divide a string sempre que encontra <code>;</code>.</p></div></aside><hr id="3455b436-ee20-4a6c-a5e5-0bef7031e541" dir="auto"/><h1 id="b8da7f83-24c7-4339-9958-a8d0c9a08a68" class="block-color-orange" data-notion-highlight="orange" dir="auto">21. Separando diretamente em variáveis</h1><pre id="308b5d6c-b892-4a95-b808-00e8a9daab49" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;notas.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        nome, nota = linha.strip().split(&quot;;&quot;)
+
+        print(&quot;Aluno:&quot;, nome)
+        print(&quot;Nota:&quot;, nota)</code></pre><hr id="0d5ba26d-2791-441e-baeb-0eb900936e20" dir="auto"/><h1 id="e54e24b7-ee63-4243-b395-c1d7c603a9cb" class="block-color-orange" data-notion-highlight="orange" dir="auto">22. Convertendo os dados</h1><p id="b8ba258e-6b2f-42d9-b511-2f9c07a0a314" class="" dir="auto">Os dados lidos de um arquivo são inicialmente <strong>strings</strong>.</p><pre id="9bcf849f-d405-4afb-aa6e-19f9a4772c89" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">nota = float(nota)</code></pre><p id="8f1d87c9-be26-4295-950a-902748abe9ec" class="" dir="auto">Exemplo completo:</p><pre id="8c8a0283-fdd4-43dc-be92-5bf7414e1a3b" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;notas.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        nome, nota = linha.strip().split(&quot;;&quot;)
+        nota = float(nota)
+
+        if nota &gt;= 7:
+            situacao = &quot;Aprovado&quot;
+        else:
+            situacao = &quot;Reprovado&quot;
+
+        print(nome, nota, situacao)</code></pre><hr id="6a7187c0-5861-41f8-bd9e-0c3456f500e5" dir="auto"/><h1 id="1e05aae5-472b-4070-b994-2455b75dbc9a" class="block-color-orange" data-notion-highlight="orange" dir="auto">23. Calculando a média das notas</h1><pre id="ec9e0b5a-d831-42a0-b585-de395701892f" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">soma = 0
+quantidade = 0
+
+with open(&quot;notas.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    for linha in arquivo:
+        nome, nota = linha.strip().split(&quot;;&quot;)
+        nota = float(nota)
+
+        soma += nota
+        quantidade += 1
+
+media = soma / quantidade
+
+print(&quot;Média da turma:&quot;, media)</code></pre><h3 id="246b5776-f7d4-493b-9237-1a9a135fdacf" class="" dir="auto">Pense</h3><blockquote id="a1a7f135-86cc-48e9-89a5-cef89c9172e1" class="" dir="auto">Que problema poderia ocorrer se <code>notas.txt</code> estivesse vazio?</blockquote><hr id="d66a7f94-8e09-4be0-9b35-c3d4b250e894" dir="auto"/><h1 id="5a65bbaf-adf8-449a-9236-41535b2587e2" class="block-color-red" data-notion-highlight="red" dir="auto">24. E se o arquivo não existir?</h1><p id="b92f7009-5ae5-4c55-899e-83234dacc8e9" class="" dir="auto">Experimente:</p><pre id="0560be50-f1e2-4195-bb36-a63a73a94413" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">with open(&quot;arquivo_que_nao_existe.txt&quot;, &quot;r&quot;) as arquivo:
+    print(arquivo.read())</code></pre><p id="c3c53792-10d6-4f6a-9221-4500d984a353" class="" dir="auto">Será exibido um erro semelhante a <code>FileNotFoundError</code>.</p><p id="72845f25-9691-4a53-b2a3-6910ff44ec8c" class="" dir="auto">Podemos tratar esse problema:</p><pre id="ddaac51e-cbb7-4a12-940c-dd40c324f7cb" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">try:
+    with open(&quot;alunos.txt&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+        print(arquivo.read())
+
+except FileNotFoundError:
+    print(&quot;Arquivo não encontrado.&quot;)</code></pre><aside class="block-color-red_background callout" data-notion-callout="" data-notion-callout-icon="🛡️" data-notion-callout-background="red_background" style="white-space:pre-wrap;display:flex" id="762042b9-65e4-4c40-ab6d-8ac3f6530ee1" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🛡️"></span></div><div style="width:100%"><p id="b35fe67e-bba3-43b2-8fa8-be022587ae7a" class="" dir="auto">O tratamento de exceções permite que o programa lide com situações inesperadas sem simplesmente encerrar com erro.</p></div></aside><hr id="1d6a85eb-c87c-40d4-b58a-9e8568d030da" dir="auto"/><h1 id="7b925fc5-3ed4-423c-b4cd-e9dfc0f196d2" class="block-color-blue" data-notion-highlight="blue" dir="auto">25. Introdução aos arquivos CSV</h1><p id="c5e8f37e-7989-40af-b5a9-81ba973d1c30" class="" dir="auto">Arquivos <code>.csv</code> são muito utilizados para armazenar dados organizados em <strong>linhas e colunas</strong>.</p><pre id="c54e97b2-5187-4430-8ff2-c3ea17dffae6" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">nome;idade;curso
+Ana;18;Informática
+Carlos;21;Informática
+Maria;19;Administração</code></pre><p id="90c4df5f-4491-4d81-aaa7-fbd2d66a0589" class="" dir="auto">Eles podem ser abertos em LibreOffice Calc, Microsoft Excel e Google Planilhas. Também podem ser gerados por <strong>formulários de pesquisa</strong>.</p><aside class="block-color-teal_background callout" data-notion-callout="" data-notion-callout-icon="🔗" data-notion-callout-background="teal_background" style="white-space:pre-wrap;display:flex" id="f363e5dd-7c6d-43c1-a76e-27241a8492d3" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🔗"></span></div><div style="width:100%"><p id="8c01cd7c-4e45-4692-9ddc-57cf559613ba" class="" dir="auto"><strong>Conexão com o projeto interdisciplinar:</strong> os dados coletados por um formulário poderão ser exportados para CSV e processados pelos programas desenvolvidos pela turma.</p></div></aside><hr id="9b635849-f266-4d5a-94c2-8d46fa412956" dir="auto"/><h1 id="d29f4b45-6622-4ff3-bc9a-3b4e4e261d4f" class="block-color-blue" data-notion-highlight="blue" dir="auto">26. Lendo um CSV com Python</h1><p id="fc4c9496-8fff-481b-bd87-e105556495ea" class="" dir="auto">Python possui a biblioteca <code>csv</code>.</p><pre id="100daf2b-3a80-4bb5-94cc-1b3161a4df1b" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">import csv
+
+with open(&quot;pesquisa.csv&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    leitor = csv.reader(arquivo, delimiter=&quot;;&quot;)
+
+    for linha in leitor:
+        print(linha)</code></pre><hr id="7ffc9b33-2329-4f89-89ca-34953618d064" dir="auto"/><h1 id="639c6e3f-84de-4e41-a8fb-9b946e5bb112" class="block-color-blue" data-notion-highlight="blue" dir="auto">27. CSV com cabeçalho e <code>DictReader</code></h1><p id="fbac94b5-f59c-444e-a217-746a302727ee" class="" dir="auto">Considere:</p><pre id="f6970057-f8cd-4f56-af37-2d6d34aab756" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">nome;idade;curso
+Ana;18;Informática
+Carlos;21;Informática</code></pre><p id="03b1e3d4-f582-4dfa-9706-82cc345b7a41" class="" dir="auto">Podemos utilizar os nomes das colunas:</p><pre id="2b93e022-7aec-48d9-86f4-2507f4ae3016" class="code code-wrap" data-notion-code-syntax="python"><code class="language-python" style="white-space:pre-wrap;word-break:break-all">import csv
+
+with open(&quot;pesquisa.csv&quot;, &quot;r&quot;, encoding=&quot;utf-8&quot;) as arquivo:
+    leitor = csv.DictReader(arquivo, delimiter=&quot;;&quot;)
+
+    for pessoa in leitor:
+        print(&quot;Nome:&quot;, pessoa[&quot;nome&quot;])
+        print(&quot;Idade:&quot;, pessoa[&quot;idade&quot;])
+        print(&quot;Curso:&quot;, pessoa[&quot;curso&quot;])</code></pre><aside class="block-color-blue_background callout" data-notion-callout="" data-notion-callout-icon="🧩" data-notion-callout-background="blue_background" style="white-space:pre-wrap;display:flex" id="1703bc22-8ab6-4f48-b314-415c9ba5c032" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🧩"></span></div><div style="width:100%"><p id="65fd743b-0c4a-4191-a760-7787d3589ff8" class="" dir="auto">Com <code>DictReader</code>, cada linha pode ser acessada pelos <strong>nomes das colunas</strong>, o que facilita muito o processamento de formulários.</p></div></aside><hr id="09a322e6-31df-4c8b-a256-28c9204536ef" dir="auto"/><h1 id="b917c5d4-bc37-4889-b08d-99f536784027" class="block-color-purple" data-notion-highlight="purple" dir="auto">28. Desafio final</h1><p id="44a2620e-3d59-4d76-a73a-d4d17974f0eb" class="" dir="auto">Crie um programa com o seguinte menu:</p><pre id="61574f48-4c95-4969-aa90-943eb892ab27" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">===== SISTEMA DE ALUNOS =====
+
+1 - Cadastrar aluno
+2 - Listar alunos
+3 - Mostrar aprovados
+4 - Mostrar reprovados
+5 - Calcular média da turma
+0 - Sair</code></pre><p id="4c35c059-8bf5-42bb-9331-a0ac3d12053b" class="" dir="auto">Cada aluno deve possuir <strong>nome e nota</strong>, armazenados em <code>notas.txt</code> no formato:</p><pre id="38136600-6891-4d58-ac46-8eb0e9a4f09e" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Ana;8.5
+Carlos;5.5
+João;7.5</code></pre><h3 id="6a86a055-6a6e-4202-bea7-f458c44b2e9e" class="" dir="auto">Utilize obrigatoriamente</h3><ul id="7dc912ad-2953-441f-9c93-692d9516c5cb" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">funções</span><div class="indented"></div></li></ul><ul id="79a5ff41-3176-406a-b3c3-784f4622dccf" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked"><code>while</code></span><div class="indented"></div></li></ul><ul id="8f96cac7-7ff8-4d77-b359-206dc669e9f0" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked"><code>match/case</code></span><div class="indented"></div></li></ul><ul id="084f9364-c936-4244-9ace-fe60c086035e" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked"><code>for</code></span><div class="indented"></div></li></ul><ul id="b14b3d8f-1f42-491f-9d6c-ffacbc99860f" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked"><code>if</code></span><div class="indented"></div></li></ul><ul id="05542ce4-5887-4dcc-8f12-64adeb563f22" class="to-do-list" dir="auto"><li><input type="checkbox" class="checkbox checkbox-off" disabled=""/> <span class="to-do-children-unchecked">arquivos</span><div class="indented"></div></li></ul><hr id="76317bee-b536-4cf6-96ee-3f01c9a51d2b" dir="auto"/><h1 id="bcef31dc-589f-446e-ade8-f062458b7c4a" class="block-color-teal" data-notion-highlight="teal" dir="auto">Resumo rápido</h1><div id="b2aa42e6-3a2f-41ec-a17c-509712b4a140" class="column-list" data-notion-column-list="" dir="auto"><div id="41a4d9e7-5fb9-4b8f-a232-12d00f13810f" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><h3 id="ede289ab-7c5c-4218-aea3-8f03084df266" class="" dir="auto">Abrindo arquivos</h3><ul id="cd4d8615-2c51-4356-8bc8-e70f7125320e" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>&quot;r&quot;</code> → leitura</li></ul><ul id="8e0bca9f-3f3b-483a-855e-0d1f2fa01e4a" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>&quot;w&quot;</code> → escrita/substituição</li></ul><ul id="0b6a0a15-1415-4463-9bec-831201d502c2" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>&quot;a&quot;</code> → acrescentar</li></ul><ul id="066c795f-2e19-4d68-b119-6761bc7e9837" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>with</code> → fecha automaticamente</li></ul></div><div id="c8c1c4d5-5bef-48b6-a2f5-78e36307cf73" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><h3 id="df41b5be-3e43-4fb5-adfe-2655b1a08685" class="" dir="auto">Lendo e tratando</h3><ul id="c2fd420d-f5e7-47d2-8f7a-e6a705677048" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>read()</code> → lê tudo</li></ul><ul id="e78cd729-a1cf-4402-91ea-e09311718897" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>readline()</code> → uma linha</li></ul><ul id="e9fe7e8c-97f2-4ffb-8de4-e19473fd9492" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>readlines()</code> → lista de linhas</li></ul><ul id="a0a4df9f-55b5-428e-b147-f1a6a50fcd27" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>strip()</code> → remove espaços/quebras</li></ul><ul id="00d21898-be4d-4266-8b99-45c1a5ef5857" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>split()</code> → separa uma string</li></ul></div></div><aside class="block-color-teal_background callout" data-notion-callout="" data-notion-callout-icon="🧠" data-notion-callout-background="teal_background" style="white-space:pre-wrap;display:flex" id="7b3cc343-7ffa-4345-9119-58f3b3720f8c" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="🧠"></span></div><div style="width:100%"><p id="8e1aea3d-a740-4d85-b679-fc252cfa6a31" class="" dir="auto"><strong>Ideia principal:</strong>  </p><p id="c53a46c1-6448-4c1d-a71a-dc76701fae24" class="" dir="auto">Variáveis mantêm dados durante a execução.  </p><p id="8f21ddbd-8d12-4a6a-b281-09502547adad" class="" dir="auto"><strong>Arquivos permitem que os dados continuem existindo depois que o programa termina.</strong></p></div></aside></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
